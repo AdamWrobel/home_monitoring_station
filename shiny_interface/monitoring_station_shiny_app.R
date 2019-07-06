@@ -1,0 +1,155 @@
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+library(shiny)
+library(dplyr)
+library(ggplot2)
+library(jsonlite)
+library(future)
+
+setwd('E:/1TB_disk/Dane/Projekty/PM_sensors/')
+load('Data/PM_data.Rdata')
+
+gg_color_hue <- function(n) {
+    hues = seq(15, 375, length = n + 1)
+    hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+#githubURL <- "https://raw.githubusercontent.com/AdamWrobel/PM_sensor/master/data.csv"
+#PM_df_stored <- read.csv(githubURL)
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+   
+   # Application title
+   titlePanel("Home monitoring station"),
+   
+   # Sidebar with a slider input for number of bins 
+   sidebarLayout(
+      sidebarPanel(
+         sliderInput("Startingdate",
+                     "Range:",
+                     min = as.Date("2018-10-15"),
+                     max = as.Date(substr(Sys.time(),1,10)),
+                     #value = as.Date(substr(Sys.time(),1,10)))
+                     #max = as.Date("2018-10-16"),
+                     value = c((as.Date(substr(Sys.time(),1,10))-1),as.Date(substr(Sys.time(),1,10)))
+                     ),
+        #tags$head(tags$script(src = "message-handler.js")),
+        actionButton("query", "Query Raspberry")),
+      # Show a plot of the generated distribution
+      mainPanel(
+         plotOutput("humidityPlot"),
+         plotOutput("pmPlot")#,
+         #plotOutput("tempPlot")
+      )
+   )
+)
+
+# Define server logic 
+server <- function(input, output, session) {
+    executed <- 0
+    observeEvent(input$query, {
+        future({source('R/PM.R'); executed <- 1})
+        if(executed == 1) {session$reload()}
+        #session$sendCustomMessage(type = 'testmessage',
+        #                          message = 'Query is being exectued')
+    })
+    
+
+    
+    output$humidityPlot <- renderPlot({
+        last_night_end <- as.POSIXlt(paste0(input$Startingdate[2],' 06:00:00 CET'))
+        last_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
+        previous_night_end <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
+        previous_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
+        start <- as.POSIXlt(paste0(input$Startingdate[1],' 00:00:00 CET'))
+        end <- min(as.POSIXlt(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+        PM_df_stored %>%   
+            filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
+            group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
+            mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 1/7 * level +1/7 * lead(level,1) + 1/7 * lead(level,2) + 1/7 * lead(level,3),
+                   level_avg = ifelse(is.na(level_avg),level,level_avg),
+                   level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
+            filter(measurement == 'Humidity') %>% mutate(grouping = paste(measurement,owner)) %>%
+            ggplot() + 
+            geom_rect(aes(xmin=max(start,last_night_start), xmax=last_night_end, ymin=30, ymax=100, alpha = 'Night')) +
+            geom_rect(aes(xmin=max(start,previous_night_start), xmax=previous_night_end, ymin=30, ymax=100, alpha = 'Night')) +
+            geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
+                                 lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
+            geom_hline(yintercept=65, linetype="dotted", 
+                       color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
+            geom_hline(yintercept=35, linetype="dotted", 
+                       color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
+            scale_alpha_manual(values=c(0.4,0.8,0.005))+
+            scale_linetype_manual(values=c(1, 3))+
+            xlab('time') + ylab("Humidity") +
+            ylim(30,100) +
+            xlim(start, end)
+        
+      
+   })
+    
+    output$pmPlot <- renderPlot({
+        last_night_end <- as.POSIXlt(paste0(input$Startingdate[2],' 06:00:00 CET'))
+        last_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
+        previous_night_end <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
+        previous_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
+        start <- as.POSIXlt(paste0(input$Startingdate[1],' 00:00:00 CET'))
+        end <- min(as.POSIXlt(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+        PM_df_stored %>% 
+            filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
+            group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
+            mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 
+                       1/7 * level + 
+                       1/7 * lead(level,1) + 1/7 * lead(level,2) + 1/7 * lead(level,3),
+                   level_avg = ifelse(is.na(level_avg),level,level_avg),
+                   level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
+            filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>% mutate(grouping = paste(measurement,owner)) %>%
+            ggplot() + 
+            geom_rect(aes(xmin=max(start,last_night_start), xmax=last_night_end, ymin=0, ymax=Inf, alpha = 'Night')) +
+            geom_rect(aes(xmin=max(start,previous_night_start), xmax=previous_night_end, ymin=0, ymax=Inf, alpha = 'Night')) +
+            geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
+                                 lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
+            #geom_hline(yintercept=10, linetype="dotted", 
+            #           aes(colour = 'Safe'), size=1.5, alpha = 0.8) +
+            geom_hline(yintercept=10, linetype="dotted", 
+                       color = gg_color_hue(4)[4], size=1.5, alpha = 0.8) +
+            #geom_ribbon(aes(x = date_time ,ymin = 15, ymax = 50, alpha = 'Safe'),
+            #            fill = gg_color_hue(4)[4]) +
+            geom_hline(yintercept=40, linetype="dotted", 
+                       color = gg_color_hue(4)[4], size=1.5, alpha = 0.8) +
+            scale_alpha_manual(values=c(0.4,0.8,0.005))+
+            scale_linetype_manual(values=c(1, 3))+
+            xlab('time') + ylab("Air Pollution") +
+            xlim(start, end)
+        
+    })
+    
+    # output$tempPlot <- renderPlot({
+    #     PM_df_stored %>%   
+    #         filter(date >= input$Startingdate[1],date <= input$Startingdate[2]) %>%
+    #         filter(measurement == 'Temperature') %>% mutate(grouping = paste(measurement,owner)) %>%
+    #         ggplot() + geom_line(aes(x = date_time, y = level, colour = measurement, group = grouping, alpha = owner),
+    #                              lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
+    #         geom_hline(yintercept=25, linetype="dotted", 
+    #                    color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
+    #         geom_hline(yintercept=20, linetype="dotted", 
+    #                    color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
+    #         scale_alpha_manual(values=c(1,0.4))+
+    #         scale_linetype_manual(values=c(1))+
+    #         xlab('time') + ylab("Temperature")
+    #     
+    #     
+    # })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+

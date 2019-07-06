@@ -1,4 +1,4 @@
-PM_plot <- PM_df_stored %>%   
+PM_plot <- PM_df_stored %>% filter(date >= Sys.Date() -5 ) %>%
     group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
     mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 1/7 * level +1/7 * lead(level,1) + 1/7 * lead(level,2) + 1/7 * lead(level,3),
            level_avg = ifelse(is.na(level_avg),level,level_avg),
@@ -17,7 +17,12 @@ print(PM_plot)
 
 
 
-png(paste0('Plots/full_history/PM',gsub(':','_',gsub(' ','_',date())),'.png'), 
+png(paste0('plots_local/PM_from_',Sys.Date() - 5,'_to_',  Sys.Date(),'.png'), 
+    width = 1920*2, height = 1080*2, res = 200*2)
+PM_plot 
+dev.off()
+
+png(paste0('plots/PM_from_last_five_days.png'), 
     width = 1920*2, height = 1080*2, res = 200*2)
 PM_plot 
 dev.off()
@@ -52,14 +57,19 @@ PM10_plot2 <-
 
 print(PM10_plot2)
 
-png(paste0('Plots/since_previous_query/PM_since_previous_query_',gsub(':','_',gsub(' ','_',date())),'.png'), 
+png(paste0('plots_local/PM_since_previous_query_',gsub(':','_',gsub(' ','_',date())),'.png'), 
+    width = 1920*2, height = 1080*2, res = 200*2)
+PM10_plot2 
+dev.off()
+
+png(paste0('plots/PM_since_previous_query.png'), 
     width = 1920*2, height = 1080*2, res = 200*2)
 PM10_plot2 
 dev.off()
 
 
 
-humidity_plot <- PM_df_stored %>%   
+humidity_plot <- PM_df_stored %>% filter(date >= Sys.Date() -5 ) %>%
     group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
     mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 1/7 * level +1/7 * lead(level,1) + 1/7 * lead(level,2) + 1/7 * lead(level,3),
            level_avg = ifelse(is.na(level_avg),level,level_avg),
@@ -78,7 +88,12 @@ humidity_plot <- PM_df_stored %>%
 print(humidity_plot)
 
 
-png(paste0('Plots/full_history/humidity',gsub(':','_',gsub(' ','_',date())),'.png'), 
+png(paste0('plots_local/humidity_',Sys.Date() - 5,'_to_',  Sys.Date(),'.png'),
+    width = 1920*2, height = 1080*2, res = 200*2)
+humidity_plot 
+dev.off()
+
+png(paste0('plots/humidity_from_last_five_days.png'),
     width = 1920*2, height = 1080*2, res = 200*2)
 humidity_plot 
 dev.off()
@@ -103,7 +118,13 @@ humidity_plot2 <- PM_df_stored %>%
 print(humidity_plot)
 
 
-png(paste0('Plots/since_previous_query/humidity',gsub(':','_',gsub(' ','_',date())),'.png'), 
+png(paste0('plots_local/humidity_since_previous_query',gsub(':','_',gsub(' ','_',date())),'.png'), 
     width = 1920*2, height = 1080*2, res = 200*2)
 humidity_plot2
 dev.off()
+
+png(paste0('plots/humidity_since_previous_query.png'), 
+    width = 1920*2, height = 1080*2, res = 200*2)
+humidity_plot2
+dev.off()
+

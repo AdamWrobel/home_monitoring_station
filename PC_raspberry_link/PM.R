@@ -4,13 +4,12 @@ library(httr)
 library(purrr)
 library(jsonlite)
 library(dplyr)
-setwd('E:/1TB_disk/Dane/Projekty/PM_sensors/')
-source('R/functions.R')
+source('PC_raspberry_link/functions.R')
 
 library(RCurl)
 curlSetOpt(timeout = 2000000)
 
-
+source('PC_raspberry_link/airly_API')
 load('Data/PM_data.Rdata')
 
 last_stored_obs <-
@@ -93,7 +92,6 @@ PM_df_stored <-
 
 
 
-
-save(PM_df_stored, file = paste0('Data/PM_data.Rdata'))
-save(PM_df_stored, file = paste0('Data/PM_df',gsub(':','_',gsub(' ','_',date())),'.Rdata'))
+save(PM_df_stored, file = paste0('data/PM_data.Rdata'))
+#save(PM_df_stored, file = paste0('data/PM_df',gsub(':','_',gsub(' ','_',date())),'.Rdata'))
 

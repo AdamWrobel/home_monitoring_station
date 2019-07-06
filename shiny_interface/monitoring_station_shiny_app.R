@@ -13,8 +13,11 @@ library(ggplot2)
 library(jsonlite)
 library(future)
 
-setwd('E:/1TB_disk/Dane/Projekty/PM_sensors/')
-load('Data/PM_data.Rdata')
+setwd("E:/1TB_disk/Dane/Projekty/Monitoring_Station")
+load('data/PM_data.Rdata')
+#load('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data.Rdata?raw=true')
+
+PM_df_stored <- PM_df_stored %>% filter(date >= Sys.Date() -5 )
 
 gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
@@ -35,8 +38,8 @@ ui <- fluidPage(
       sidebarPanel(
          sliderInput("Startingdate",
                      "Range:",
-                     min = as.Date("2018-10-15"),
-                     max = as.Date(substr(Sys.time(),1,10)),
+                     min = Sys.Date()-5,
+                     max = Sys.Date(),
                      #value = as.Date(substr(Sys.time(),1,10)))
                      #max = as.Date("2018-10-16"),
                      value = c((as.Date(substr(Sys.time(),1,10))-1),as.Date(substr(Sys.time(),1,10)))

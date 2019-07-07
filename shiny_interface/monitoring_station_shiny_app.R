@@ -10,14 +10,13 @@
 library(shiny)
 library(dplyr)
 library(ggplot2)
-library(jsonlite)
-library(future)
+#library(jsonlite)
+#library(future)
+library(repmis)
 
-setwd("E:/1TB_disk/Dane/Projekty/Monitoring_Station")
-load('data/PM_data.Rdata')
-#load('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data.Rdata?raw=true')
+source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data.Rdata?raw=true')
 
-PM_df_stored <- PM_df_stored %>% filter(date >= Sys.Date() -5 )
+PM_df_stored <- PM_df_stored %>% filter(date >= as.Date("2018-07-07") -5 )
 
 gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
@@ -40,8 +39,10 @@ ui <- fluidPage(
                      "Range:",
                      min = Sys.Date()-5,
                      max = Sys.Date(),
-                     #value = as.Date(substr(Sys.time(),1,10)))
-                     #max = as.Date("2018-10-16"),
+                     #value = as.Date(substr(Sys.time(),1,10))),
+                     #min = as.Date("2019-07-02"),
+                     #max = as.Date("2018-07-06"),
+                     #value = c(as.Date("2019-07-02"),as.Date("2018-07-06"))
                      value = c((as.Date(substr(Sys.time(),1,10))-1),as.Date(substr(Sys.time(),1,10)))
                      ),
         #tags$head(tags$script(src = "message-handler.js")),
@@ -57,13 +58,13 @@ ui <- fluidPage(
 
 # Define server logic 
 server <- function(input, output, session) {
-    executed <- 0
-    observeEvent(input$query, {
-        future({source('R/PM.R'); executed <- 1})
-        if(executed == 1) {session$reload()}
-        #session$sendCustomMessage(type = 'testmessage',
-        #                          message = 'Query is being exectued')
-    })
+    #executed <- 0
+    #observeEvent(input$query, {
+    #    future({source('R/PM.R'); executed <- 1})
+    #    if(executed == 1) {session$reload()}
+    #    #session$sendCustomMessage(type = 'testmessage',
+    #    #                          message = 'Query is being exectued')
+    #})
     
 
     

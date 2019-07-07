@@ -37,13 +37,13 @@ ui <- fluidPage(
       sidebarPanel(
          sliderInput("Startingdate",
                      "Range:",
-                     min = Sys.Date()-5,
-                     max = Sys.Date(),
+                     min = as.POSIXct(Sys.Date()-5),
+                     max = as.POSIXct(Sys.Date()),
                      #value = as.Date(substr(Sys.time(),1,10))),
                      #min = as.Date("2019-07-02"),
                      #max = as.Date("2018-07-06"),
                      #value = c(as.Date("2019-07-02"),as.Date("2018-07-06"))
-                     value = c((as.Date(substr(Sys.time(),1,10))-1),as.Date(substr(Sys.time(),1,10)))
+                     value = c(as.POSIXct(Sys.Date() - 1),as.POSIXct(Sys.Date()))
                      ),
         #tags$head(tags$script(src = "message-handler.js")),
         actionButton("query", "Query Raspberry")),
@@ -69,12 +69,12 @@ server <- function(input, output, session) {
 
     
     output$humidityPlot <- renderPlot({
-        last_night_end <- as.POSIXlt(paste0(input$Startingdate[2],' 06:00:00 CET'))
-        last_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
-        previous_night_end <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
-        previous_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
-        start <- as.POSIXlt(paste0(input$Startingdate[1],' 00:00:00 CET'))
-        end <- min(as.POSIXlt(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+        last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
+        last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
+        previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
+        previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
+        start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
+        end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
         PM_df_stored %>%   
             filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
             group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
@@ -101,12 +101,12 @@ server <- function(input, output, session) {
    })
     
     output$pmPlot <- renderPlot({
-        last_night_end <- as.POSIXlt(paste0(input$Startingdate[2],' 06:00:00 CET'))
-        last_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
-        previous_night_end <- as.POSIXlt(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
-        previous_night_start <- as.POSIXlt(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
-        start <- as.POSIXlt(paste0(input$Startingdate[1],' 00:00:00 CET'))
-        end <- min(as.POSIXlt(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+        last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
+        last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
+        previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
+        previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
+        start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
+        end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
         PM_df_stored %>% 
             filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
             group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 

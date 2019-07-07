@@ -75,7 +75,7 @@ humidity_plot <- PM_df_stored %>% filter(date >= Sys.Date() -5 ) %>%
            level_avg = ifelse(is.na(level_avg),level,level_avg),
            level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
     filter(measurement == 'Humidity') %>% mutate(grouping = paste(measurement,owner)) %>%
-    ggplot() + geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping),
+    ggplot() + geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
                          lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
     geom_hline(yintercept=65, linetype="dashed", 
                color = gg_color_hue(2)[1], size=1.5, alpha = 0.5) +
@@ -105,7 +105,7 @@ humidity_plot2 <- PM_df_stored %>%
            level_avg = ifelse(is.na(level_avg),level,level_avg),
            level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
     filter(measurement == 'Humidity') %>% mutate(grouping = paste(measurement,owner)) %>%
-    ggplot() + geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping),
+    ggplot() + geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
                          lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
     geom_hline(yintercept=65, linetype="dashed", 
                color = gg_color_hue(2)[1], size=1.5, alpha = 0.5) +

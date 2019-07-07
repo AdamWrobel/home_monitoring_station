@@ -9,12 +9,12 @@ source('PC_raspberry_link/functions.R')
 library(RCurl)
 curlSetOpt(timeout = 2000000)
 
-source('PC_raspberry_link/airly_API')
+
 load('Data/PM_data.Rdata')
 
 last_stored_obs <-
   PM_df_stored %>% filter(date_time == max(date_time)) %>% select(date, time, date_time)
-
+source('PC_raspberry_link/airly_API.R')
 
 #PM_df <- read.csv('http://192.168.1.8/download_csv.php?id=0&period=curr_day&data[]=pm10&data[]=pm2.5', 
 #                 header = F)

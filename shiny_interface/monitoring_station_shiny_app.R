@@ -14,9 +14,11 @@ library(ggplot2)
 #library(future)
 library(repmis)
 
-source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data.Rdata?raw=true')
+source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data.Rdata?raw=true', stringsAsFactors = F)
 
-PM_df_stored <- PM_df_stored %>% filter(date >= as.Date("2018-07-07") -5 )
+PM_df_stored$owner <- as.character(PM_df_stored$owner)
+last_date <- PM_df_stored %>% tail(1) %>% pull(date)
+PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 10)
 
 gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)
@@ -37,13 +39,13 @@ ui <- fluidPage(
       sidebarPanel(
          sliderInput("Startingdate",
                      "Range:",
-                     min = as.POSIXct(Sys.Date()-5),
-                     max = as.POSIXct(Sys.Date()),
+                     min = as.Date(last_date-10),
+                     max = as.Date(last_date),
                      #value = as.Date(substr(Sys.time(),1,10))),
                      #min = as.Date("2019-07-02"),
                      #max = as.Date("2018-07-06"),
                      #value = c(as.Date("2019-07-02"),as.Date("2018-07-06"))
-                     value = c(as.POSIXct(Sys.Date() - 1),as.POSIXct(Sys.Date()))
+                     value = c(as.Date(last_date - 1),as.Date(last_date))
                      ),
         #tags$head(tags$script(src = "message-handler.js")),
         actionButton("query", "Query Raspberry")),
@@ -69,12 +71,12 @@ server <- function(input, output, session) {
 
     
     output$humidityPlot <- renderPlot({
-        last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
-        last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
-        previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
-        previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
-        start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
-        end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+        #last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
+        #last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
+        #previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
+        #previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
+        #start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
+        #end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
         PM_df_stored %>%   
             filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
             group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
@@ -83,8 +85,8 @@ server <- function(input, output, session) {
                    level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
             filter(measurement == 'Humidity') %>% mutate(grouping = paste(measurement,owner)) %>%
             ggplot() + 
-            geom_rect(aes(xmin=max(start,last_night_start), xmax=last_night_end, ymin=30, ymax=100, alpha = 'Night')) +
-            geom_rect(aes(xmin=max(start,previous_night_start), xmax=previous_night_end, ymin=30, ymax=100, alpha = 'Night')) +
+            #geom_rect(aes(xmin=max(start,last_night_start), xmax=last_night_end, ymin=30, ymax=100, alpha = 'Night')) +
+            #geom_rect(aes(xmin=max(start,previous_night_start), xmax=previous_night_end, ymin=30, ymax=100, alpha = 'Night')) +
             geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
                                  lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
             geom_hline(yintercept=65, linetype="dotted", 
@@ -94,20 +96,20 @@ server <- function(input, output, session) {
             scale_alpha_manual(values=c(0.4,0.8,0.005))+
             scale_linetype_manual(values=c(1, 3))+
             xlab('time') + ylab("Humidity") +
-            ylim(30,100) +
-            xlim(start, end)
+            ylim(20,100) #+
+            #xlim(start, end)
         
       
    })
     
     output$pmPlot <- renderPlot({
-        last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
-        last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
-        previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
-        previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
-        start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
-        end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
-        PM_df_stored %>% 
+        #last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
+        #last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
+        #previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
+        #previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
+        #start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
+        #end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+        PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>%
             filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
             group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
             mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 
@@ -115,10 +117,10 @@ server <- function(input, output, session) {
                        1/7 * lead(level,1) + 1/7 * lead(level,2) + 1/7 * lead(level,3),
                    level_avg = ifelse(is.na(level_avg),level,level_avg),
                    level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
-            filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>% mutate(grouping = paste(measurement,owner)) %>%
+            mutate(grouping = paste(measurement,owner)) %>%
             ggplot() + 
-            geom_rect(aes(xmin=max(start,last_night_start), xmax=last_night_end, ymin=0, ymax=Inf, alpha = 'Night')) +
-            geom_rect(aes(xmin=max(start,previous_night_start), xmax=previous_night_end, ymin=0, ymax=Inf, alpha = 'Night')) +
+            #geom_rect(aes(xmin=max(start,last_night_start), xmax=last_night_end, ymin=0, ymax=Inf, alpha = 'Night')) +
+            #geom_rect(aes(xmin=max(start,previous_night_start), xmax=previous_night_end, ymin=0, ymax=Inf, alpha = 'Night')) +
             geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
                                  lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
             #geom_hline(yintercept=10, linetype="dotted", 
@@ -131,8 +133,8 @@ server <- function(input, output, session) {
                        color = gg_color_hue(4)[4], size=1.5, alpha = 0.8) +
             scale_alpha_manual(values=c(0.4,0.8,0.005))+
             scale_linetype_manual(values=c(1, 3))+
-            xlab('time') + ylab("Air Pollution") +
-            xlim(start, end)
+            xlab('time') + ylab("Air Pollution") #+
+            #xlim(start, end)
         
     })
     

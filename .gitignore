@@ -2,3 +2,4 @@ Monitoring_Station.Rproj
 .Rproj.user
 .Rhistory
 plots_local/
+shiny_interface/rsconnect/

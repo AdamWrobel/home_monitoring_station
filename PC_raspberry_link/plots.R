@@ -62,10 +62,10 @@ png(paste0('plots_local/PM_since_previous_query_',gsub(':','_',gsub(' ','_',date
 PM10_plot2 
 dev.off()
 
-png(paste0('plots/PM_since_previous_query.png'), 
-    width = 1920*2, height = 1080*2, res = 200*2)
-PM10_plot2 
-dev.off()
+# png(paste0('plots/PM_since_previous_query.png'), 
+#     width = 1920*2, height = 1080*2, res = 200*2)
+# PM10_plot2 
+# dev.off()
 
 
 
@@ -84,7 +84,7 @@ humidity_plot <- PM_df_stored %>% filter(date >= Sys.Date() -5 ) %>%
     scale_alpha_manual(values=c(1,0.4,0.2))+
     scale_linetype_manual(values=c(1, 3))+
     xlab('time') +
-    ylim(30,80)
+    ylim(30,100)
 print(humidity_plot)
 
 
@@ -123,8 +123,8 @@ png(paste0('plots_local/humidity_since_previous_query',gsub(':','_',gsub(' ','_'
 humidity_plot2
 dev.off()
 
-png(paste0('plots/humidity_since_previous_query.png'), 
-    width = 1920*2, height = 1080*2, res = 200*2)
-humidity_plot2
-dev.off()
+# png(paste0('plots/humidity_since_previous_query.png'), 
+#     width = 1920*2, height = 1080*2, res = 200*2)
+# humidity_plot2
+# dev.off()
 

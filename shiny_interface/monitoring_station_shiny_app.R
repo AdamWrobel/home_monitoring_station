@@ -37,7 +37,7 @@ ui <- fluidPage(
       sidebarPanel(
          sliderInput("Startingdate",
                      "Range:",
-                     min = as.Date(last_date-10),
+                     min = as.Date(last_date-5),
                      max = as.Date(last_date),
                      #value = as.Date(substr(Sys.time(),1,10))),
                      #min = as.Date("2019-07-02"),

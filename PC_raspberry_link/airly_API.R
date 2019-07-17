@@ -8,7 +8,7 @@ day_plus_one <- paste0(substr(day,1,1), as.numeric(substr(day,2,2)) + 2)
 if(nchar(day_plus_one) > 2){day_plus_one <- substr(day_plus_one,2,3)}
 as.Date(day) + 1
 
-day_minus_one <- as.Date(day) - 1
+day_minus_one <- as.Date(day) - 3
 #if(nchar(day_plus_one) < 2){day_plus_one <- substr(day_plus_one,2,3)}
 
 start_minus_one <- paste0(day_minus_one,'T00:00:00+00:00')

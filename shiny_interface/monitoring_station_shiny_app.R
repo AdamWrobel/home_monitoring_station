@@ -50,8 +50,8 @@ ui <- fluidPage(
       # Show a plot of the generated distribution
       mainPanel(
          plotOutput("humidityPlot"),
-         plotOutput("pmPlot")#,
-         #plotOutput("tempPlot")
+         plotOutput("pmPlot"),
+         plotOutput("tempPlot")
       )
    )
 )
@@ -136,22 +136,22 @@ server <- function(input, output, session) {
         
     })
     
-    # output$tempPlot <- renderPlot({
-    #     PM_df_stored %>%   
-    #         filter(date >= input$Startingdate[1],date <= input$Startingdate[2]) %>%
-    #         filter(measurement == 'Temperature') %>% mutate(grouping = paste(measurement,owner)) %>%
-    #         ggplot() + geom_line(aes(x = date_time, y = level, colour = measurement, group = grouping, alpha = owner),
-    #                              lwd = 1) + #facet_wrap(~measurement, scale = 'free')+ 
-    #         geom_hline(yintercept=25, linetype="dotted", 
-    #                    color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
-    #         geom_hline(yintercept=20, linetype="dotted", 
-    #                    color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
-    #         scale_alpha_manual(values=c(1,0.4))+
-    #         scale_linetype_manual(values=c(1))+
-    #         xlab('time') + ylab("Temperature")
-    #     
-    #     
-    # })
+    output$tempPlot <- renderPlot({
+        PM_df_stored %>%
+            filter(date >= input$Startingdate[1],date <= input$Startingdate[2]) %>%
+            filter(measurement == 'Temperature') %>% mutate(grouping = paste(measurement,owner)) %>%
+            ggplot() + geom_line(aes(x = date_time, y = level, colour = measurement, group = grouping, alpha = owner),
+                                 lwd = 1) + #facet_wrap(~measurement, scale = 'free')+
+            geom_hline(yintercept=25, linetype="dotted",
+                       color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
+            geom_hline(yintercept=20, linetype="dotted",
+                       color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
+            scale_alpha_manual(values=c(1,0.4))+
+            scale_linetype_manual(values=c(1))+
+            xlab('time') + ylab("Temperature")
+
+
+    })
 }
 
 # Run the application 

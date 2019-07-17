@@ -5,8 +5,8 @@ account: wrobeladam
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1014135
-bundleId: 2242110
+bundleId: 2242158
 url: https://wrobeladam.shinyapps.io/home_monitoring_station/
-when: 1563396470.78694
+when: 1563397368.85712
 asMultiple: FALSE
 asStatic: FALSE

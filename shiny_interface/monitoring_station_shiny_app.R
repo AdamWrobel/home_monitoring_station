@@ -18,7 +18,7 @@ source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/d
 
 PM_df_stored$owner <- as.character(PM_df_stored$owner)
 last_date <- PM_df_stored %>% tail(1) %>% pull(date)
-PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 10)
+PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 5)
 
 gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)

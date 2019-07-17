@@ -16,17 +16,13 @@ last_stored_obs <-
   PM_df_stored %>% filter(date_time == last(date_time)) %>% select(date, time, date_time)
 source('PC_raspberry_link/airly_API.R')
 
-#PM_df <- read.csv('http://192.168.1.8/download_csv.php?id=0&period=curr_day&data[]=pm10&data[]=pm2.5', 
-#                 header = F)
-PM_df <-  read.csv(text = getURL('http://192.168.1.8/download_csv.php?id=0&period=curr_day&data[]=pm10&data[]=pm2.5', 
+PM_df <-  read.csv(text = getURL('http://192.168.1.8/download_csv.php?id=0&period=curr_week&data[]=pm10&data[]=pm2.5', 
        timeout = 20000, header = F))
 
 colnames(PM_df) <- c('date_time','measurement','level')
 tail(PM_df %>% filter(measurement == 'pm10'),15)
 
-#PM_dfa<- read.csv('http://192.168.1.8/download_csv.php?id=0&period=prev_day&data[]=pm10&data[]=pm2.5',
-#         header = F)
-PM_dfa <-  read.csv(text = getURL('http://192.168.1.8/download_csv.php?id=0&period=prev_day&data[]=pm10&data[]=pm2.5',
+PM_dfa <-  read.csv(text = getURL('http://192.168.1.8/download_csv.php?id=0&period=prev_week&data[]=pm10&data[]=pm2.5',
                                  timeout = 20000, header = F))
 
 colnames(PM_dfa) <- c('date_time','measurement','level')

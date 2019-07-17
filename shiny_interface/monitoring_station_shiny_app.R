@@ -136,19 +136,25 @@ server <- function(input, output, session) {
         
     })
     
-    output$tempPlot <- renderPlot({
-        PM_df_stored %>%
-            filter(date >= input$Startingdate[1],date <= input$Startingdate[2]) %>%
-            filter(measurement == 'Temperature') %>% mutate(grouping = paste(measurement,owner)) %>%
-            ggplot() + geom_line(aes(x = date_time, y = level, colour = measurement, group = grouping, alpha = owner),
+    output$temgroup_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
+            mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 
+                 1/7 * level + 
+                 1/7 * lead(level,1) + 1/7 * lead(level,2) + 1/7 * lead(level,3),
+               level_avg = ifelse(is.na(level_avg),level,level_avg),
+               level_avg = ifelse(level_avg < 0.9 * level & level > 50, level,level_avg)) %>%
+             mutate(grouping = paste(measurement,owner)) %>%
+            ggplot() + geom_line(aes(x = date_time, y = level_avg, colour = measurement, group = grouping, alpha = owner),
                                  lwd = 1) + #facet_wrap(~measurement, scale = 'free')+
             geom_hline(yintercept=25, linetype="dotted",
                        color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
-            geom_hline(yintercept=20, linetype="dotted",
+            geom_hline(yintercept=21, linetype="dotted",
                        color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
-            scale_alpha_manual(values=c(1,0.4))+
+            scale_alpha_manual(values=c(0.4,1))+
             scale_linetype_manual(values=c(1))+
-            xlab('time') + ylab("Temperature")
+            xlab('time') + ylab("Temperature")pPlot <- renderPlot({
+        PM_df_stored %>% filter(measurement == 'Temperature') %>%
+            filter(date >= input$Startingdate[1],date <= input$Startingdate[2]) %>%
+            
 
 
     })

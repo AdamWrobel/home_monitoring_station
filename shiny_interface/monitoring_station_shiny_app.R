@@ -25,8 +25,6 @@ gg_color_hue <- function(n) {
     hcl(h = hues, l = 65, c = 100)[1:n]
 }
 
-#githubURL <- "https://raw.githubusercontent.com/AdamWrobel/PM_sensor/master/data.csv"
-#PM_df_stored <- read.csv(githubURL)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(

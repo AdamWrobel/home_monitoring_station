@@ -5,3 +5,4 @@ plots_local/
 shiny_interface/rsconnect/
 shiny_interface/rsconnect/documents/monitoring_station_shiny_app.R/shinyapps.io/wrobeladam/home_monitoring_station.dcf
 PC_raspberry_link/airly.R
+data/PM_data_backup.Rdata

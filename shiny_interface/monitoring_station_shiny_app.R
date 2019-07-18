@@ -49,12 +49,13 @@ ui <- fluidPage(
                      ),
          checkboxGroupInput("sources", "Data sources (Domek - inhouse, Airly - outside):",
                             owners, selected = owners),
-         checkboxGroupInput("FixPM", label = "",
+         checkboxGroupInput("FixPM", label = 'Options',
                             'Fix scale of PM plot', selected = NA),
-         sliderInput("MaxPM", label = "", min = 10, 
-                     max = upper_range_PM, value = c(upper_range_PM), step = 10),
+         sliderInput("MaxPM", label = 'Upper bound for PM plot if fix scale ticked', min = 10, 
+                     max = upper_range_PM, value = c(upper_range_PM), step = 10)#,
         #tags$head(tags$script(src = "message-handler.js")),
-        actionButton("query", "Query Raspberry")),
+        #actionButton("query", "Query Raspberry")
+        ),
       # Show a plot of the generated distribution
       mainPanel(
          plotOutput("humidityPlot"),

@@ -4,6 +4,7 @@ library(httr)
 library(purrr)
 library(jsonlite)
 library(dplyr)
+setwd('E:/1TB_disk/Dane/Projekty/Monitoring_Station')
 source('PC_raspberry_link/functions.R')
 
 library(RCurl)

@@ -26,6 +26,13 @@ stories$high_humidity[['data']] <-
   PM_df_stored %>% filter(measurement == 'Humidity') %>%
   filter(substr(date_time,1,10) >= stories$high_humidity$dates[1],substr(date_time,1,10) <= stories$high_humidity$dates[2])
 
+stories[['Warsaw_pollution']][['dates']]<-c(as.Date('2018-03-05'),as.Date('2018-03-08'))
+stories$Warsaw_pollution[['data']] <- 
+  PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>%
+  filter(substr(date_time,1,10) >= stories$Warsaw_pollution$dates[1],substr(date_time,1,10) <= stories$Warsaw_pollution$dates[2])
+
+
+
 # filter only last five days for small
 PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 5)
 upper_range_PM <- ceiling((PM_df_stored %>% filter(measurement == 'PM 10') %>% pull(level) %>% max)/100)*100
@@ -89,13 +96,14 @@ server <- function(input, output, session) {
 
   
     output$humidityPlot <- renderPlot({
+      if(is.null(input$Stories)){story = 'no_story'}else(story=input$Stories)
+      validate(need(is.null(input$Stories)|story =='Huge humidity in new apartment', message=FALSE))
         #last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
         #last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
         #previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
         #previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
         #start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
         #end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
-      if(is.null(input$Stories)){story = 'no_story'}else(story=input$Stories)
       if(story =='Huge humidity in new apartment'){data <- stories$high_humidity$data}else{
         data <- PM_df_stored %>% filter(measurement == 'Humidity') %>% filter(owner %in% input$sources) %>%
           filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2])}
@@ -125,17 +133,22 @@ server <- function(input, output, session) {
    })
     
     output$pmPlot <- renderPlot({
-      validate(need(is.null(input$Stories), message=FALSE))
+      if(is.null(input$Stories)){story = 'no_story'}else(story=input$Stories)
+      validate(need(is.null(input$Stories)|story =='Warsaw in Winter 2018', message=FALSE))
         #last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
         #last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
         #previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))
         #previous_night_start <- as.POSIXct(paste0(input$Startingdate[2]-2,' 22:00:00 CET'))
         #start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
         #end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
+      if(is.null(input$Stories)){story = 'no_story'}else(story=input$Stories)
+      if(story =='Warsaw in Winter 2018'){data <- stories$Warsaw_pollution$data}else{
+        data <- PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>% filter(owner %in% input$sources) %>%
+          filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2])}
+      
       if(length(input$sources) == 1) {alphas = 1} else{alphas = c(0.4,0.8)}
       if(is.null(input$FixPM)) {MaxPM <- NA} else {MaxPM <- input$MaxPM}
-        PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>% filter(owner %in% input$sources) %>%
-            filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2]) %>%
+      data %>%
             group_by(measurement, owner) %>% arrange(measurement, owner, desc(date_time)) %>% 
             mutate(level_avg = 1/7 * lag(level,3) + 1/7 * lag(level,2) + 1/7 * lag(level,1) + 
                        1/7 * level + 

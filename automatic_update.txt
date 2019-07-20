@@ -1,6 +1,6 @@
 cd "E:\1TB_disk\Dane\Projekty\Monitoring_Station"
 eval $(ssh-agent -s)
 ssh-add C:/Users/Adam/.ssh/github_rsa
-git add -u
+git add /data/PM_data.Rdata
 git commit -am "automatic data update"
 git push

@@ -14,8 +14,9 @@ library(ggplot2)
 #library(future)
 library(repmis)
 
-source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data.Rdata?raw=true', stringsAsFactors = F)
+source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/data/PM_data_relevant.Rdata?raw=true', stringsAsFactors = F)
 
+PM_df_stored <- PM_data_relevant
 PM_df_stored$owner <- as.character(PM_df_stored$owner)
 last_date <- PM_df_stored %>% tail(1) %>% pull(date)
 

@@ -86,9 +86,18 @@ to_append <- db_presence_indicator %>% filter(is.na(present_in_db))
 
 PM_df_stored <-
   PM_df_stored %>% rbind(to_append %>% select(-present_in_db))
-
-
-
 save(PM_df_stored, file = paste0('data/PM_data.Rdata'))
+
+stories <- list(high_humidity = list(dates = c(as.Date('2018-11-07'),as.Date('2018-11-10'))))
+stories[['Krakow_pollution']][['dates']]<-c(as.Date('2018-03-05'),as.Date('2018-03-08'))
+last_date <- PM_df_stored %>% tail(1) %>% pull(date)
+
+PM_data_relevant <-   PM_df_stored %>% filter(measurement == 'Humidity') %>%
+  filter(substr(date_time,1,10) >= stories$high_humidity$dates[1],substr(date_time,1,10) <= stories$high_humidity$dates[2]) %>%
+  rbind(PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>%
+            filter(substr(date_time,1,10) >= stories$Krakow_pollution$dates[1],substr(date_time,1,10) <= stories$Krakow_pollution$dates[2])) %>%
+  rbind(PM_df_stored %>% filter(date >= last_date - 10))
+save(PM_data_relevant, file = paste0('data/PM_data_relevant.Rdata'))
+
 #save(PM_df_stored, file = paste0('data/PM_df',gsub(':','_',gsub(' ','_',date())),'.Rdata'))
 

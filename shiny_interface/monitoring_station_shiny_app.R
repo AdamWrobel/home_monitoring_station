@@ -26,10 +26,10 @@ stories$high_humidity[['data']] <-
   PM_df_stored %>% filter(measurement == 'Humidity') %>%
   filter(substr(date_time,1,10) >= stories$high_humidity$dates[1],substr(date_time,1,10) <= stories$high_humidity$dates[2])
 
-stories[['Warsaw_pollution']][['dates']]<-c(as.Date('2018-03-05'),as.Date('2018-03-08'))
-stories$Warsaw_pollution[['data']] <- 
+stories[['Krakow_pollution']][['dates']]<-c(as.Date('2018-03-05'),as.Date('2018-03-08'))
+stories$Krakow_pollution[['data']] <- 
   PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>%
-  filter(substr(date_time,1,10) >= stories$Warsaw_pollution$dates[1],substr(date_time,1,10) <= stories$Warsaw_pollution$dates[2])
+  filter(substr(date_time,1,10) >= stories$Krakow_pollution$dates[1],substr(date_time,1,10) <= stories$Krakow_pollution$dates[2])
 
 
 
@@ -71,9 +71,9 @@ ui <- fluidPage(
          sliderInput("MaxPM", label = 'Upper bound for PM plot if fix scale ticked', min = 10, 
                      max = upper_range_PM, value = c(upper_range_PM), step = 10),#,
          checkboxGroupInput("Stories", label = 'Stories',
-                            c('Warsaw in Winter 2018','Huge humidity in new apartment'), selected = NULL)
+                            c('Krakow in Winter 2017/2018','Huge humidity in new apartment'), selected = NULL)
          #checkboxGroupInput("Stories", label = 'Stories',
-         #                   c('Krakow in Winter 2017', 'Warsaw in Winter 2018', 'Baking Bread', 'Huge humidity in new apartment', 'Cooling down the apartment in hot weeks of Summer 2019'), selected = NULL)
+         #                   c('Krakow in Winter 2017/2018', 'Warsaw in Winter 2018', 'Baking Bread', 'Huge humidity in new apartment', 'Cooling down the apartment in hot weeks of Summer 2019'), selected = NULL)
          #tags$head(tags$script(src = "message-handler.js")),
         #actionButton("query", "Query Raspberry")
         ),
@@ -144,7 +144,7 @@ server <- function(input, output, session) {
         #start <- as.POSIXct(paste0(input$Startingdate[1],' 00:00:00 CET'))
         #end <- min(as.POSIXct(paste0(input$Startingdate[2],' 24:00:00 CET')), Sys.time())
       if(is.null(input$Stories)){story = 'no_story'}else(story=input$Stories)
-      if(story =='Warsaw in Winter 2018'){data <- stories$Warsaw_pollution$data}else{
+      if(story =='Krakow in Winter 2017/2018'){data <- stories$Krakow_pollution$data}else{
         data <- PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>% filter(owner %in% input$sources) %>%
           filter(substr(date_time,1,10) >= input$Startingdate[1],substr(date_time,1,10) <= input$Startingdate[2])}
       

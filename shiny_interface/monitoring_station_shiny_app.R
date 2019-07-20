@@ -18,9 +18,18 @@ source_data('https://github.com/AdamWrobel/home_monitoring_station/blob/master/d
 
 PM_df_stored$owner <- as.character(PM_df_stored$owner)
 last_date <- PM_df_stored %>% tail(1) %>% pull(date)
+
+# create stories list
+stories <- list(high_humidity = list(dates = c(as.Date('2018-11-07'),as.Date('2018-11-10'))))
+stories$high_humidity[['data']] <- 
+  PM_df_stored %>% filter(measurement == 'Humidity') %>%
+  filter(substr(date_time,1,10) >= stories$high_humidity$dates[1],substr(date_time,1,10) <= stories$high_humidity$dates[2])
+
+# filter only last five days for small
 PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 5)
 upper_range_PM <- ceiling((PM_df_stored %>% filter(measurement == 'PM 10') %>% pull(level) %>% max)/100)*100
 owners <- PM_df_stored$owner %>% unique
+
 
 gg_color_hue <- function(n) {
     hues = seq(15, 375, length = n + 1)

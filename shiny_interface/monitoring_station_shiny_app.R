@@ -34,7 +34,7 @@ stories$Warsaw_pollution[['data']] <-
 
 
 # filter only last five days for small
-PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 5)
+PM_df_stored <- PM_df_stored %>% filter(date >= last_date - 10)
 upper_range_PM <- ceiling((PM_df_stored %>% filter(measurement == 'PM 10') %>% pull(level) %>% max)/100)*100
 owners <- PM_df_stored$owner %>% unique
 
@@ -56,7 +56,7 @@ ui <- fluidPage(
       sidebarPanel(
          sliderInput("Startingdate",
                      "Dates range:",
-                     min = as.Date(last_date-5),
+                     min = as.Date(last_date-10),
                      max = as.Date(last_date),
                      #value = as.Date(substr(Sys.time(),1,10))),
                      #min = as.Date("2019-07-02"),
@@ -71,8 +71,10 @@ ui <- fluidPage(
          sliderInput("MaxPM", label = 'Upper bound for PM plot if fix scale ticked', min = 10, 
                      max = upper_range_PM, value = c(upper_range_PM), step = 10),#,
          checkboxGroupInput("Stories", label = 'Stories',
-                            c('Krakow in Winter 2017', 'Warsaw in Winter 2018', 'Baking Bread', 'Huge humidity in new apartment', 'Cooling down the apartment in hot weeks of Summer 2019'), selected = NULL)
-        #tags$head(tags$script(src = "message-handler.js")),
+                            c('Warsaw in Winter 2018','Huge humidity in new apartment'), selected = NULL)
+         #checkboxGroupInput("Stories", label = 'Stories',
+         #                   c('Krakow in Winter 2017', 'Warsaw in Winter 2018', 'Baking Bread', 'Huge humidity in new apartment', 'Cooling down the apartment in hot weeks of Summer 2019'), selected = NULL)
+         #tags$head(tags$script(src = "message-handler.js")),
         #actionButton("query", "Query Raspberry")
         ),
       # Show a plot of the generated distribution

@@ -3,7 +3,7 @@
 # reformat into wide format
 library(tidyr)
 PM_df_stored %>% head
-df_wide <- PM_df_stored %>% tail(250000) %>% 
+df_wide <- PM_df_stored %>% tail(400000) %>% 
     mutate(#date_time = substr(date_time,1,16),
            metric = gsub(pattern = ' ', replace = '_' ,paste(owner,measurement))) %>%
     select(date_time, metric, level) %>% 
@@ -35,9 +35,24 @@ df_wide %>%
                is.na(Domek_PM_2.5) + 
                is.na(Domek_Temperature)) %>%
     # fill missing values for rows with maximum 3 missing variables
-    fill_missing %>% fill_missing %>% fill_missing() %>%  fill_missing() %>% filter(NAs <= 5) #%>% filter(Domek_PM_10 > 100)
+    fill_missing %>% fill_missing %>% fill_missing() %>%  fill_missing() %>% filter(NAs <= 5) %>% #%>% filter(Domek_PM_10 > 100)
+    mutate(NAs2 = 
+               is.na(Airly_Humidity) + 
+               is.na(Airly_PM_10) + 
+               is.na(Airly_PM_2.5)+
+               is.na(Airly_Temperature) + 
+               is.na(Domek_PM_10) +
+               is.na(Domek_PM_2.5) + 
+               is.na(Domek_Temperature)) %>% filter(NAs2 <= 3)
 
-model <- lm(Domek_PM_10 ~ Airly_PM_10 + Airly_PM_2.5 + Airly_Temperature + Airly_Humidity,data = df_wide2)
+df_wide3 <- df_wide2 %>% mutate(time = substr(date_time, 1,13)) %>% group_by(time) %>%
+    summarize(Domek_PM_10 = mean(Domek_PM_10, na.rm = T),
+              Airly_Humidity = mean(Airly_Humidity, na.rm = T),
+              Airly_PM_10 = mean(Airly_PM_10, na.rm = T),
+              Airly_PM_2.5 = mean(Airly_PM_2.5, na.rm = T),
+              Airly_Temperature = mean(Airly_Temperature, na.rm = T)) %>% filter(Domek_PM_10 > 10)
+
+model <- lm(Domek_PM_10 ~ Airly_PM_10 + Airly_PM_2.5 + Airly_Temperature + Airly_Humidity,data = df_wide3)
 summary(model)
 
 plot(model)

@@ -136,7 +136,7 @@ server <- function(input, output, session) {
     
     output$pmPlot <- renderPlot({
       if(is.null(input$Stories)){story = 'no_story'}else(story=input$Stories)
-      validate(need(is.null(input$Stories)|story =='Warsaw in Winter 2018', message=FALSE))
+      validate(need(is.null(input$Stories)|story =='Krakow in Winter 2017/2018', message=FALSE))
         #last_night_end <- as.POSIXct(paste0(input$Startingdate[2],' 06:00:00 CET'))
         #last_night_start <- as.POSIXct(paste0(input$Startingdate[2]-1,' 22:00:00 CET'))
         #previous_night_end <- as.POSIXct(paste0(input$Startingdate[2]-1,' 06:00:00 CET'))

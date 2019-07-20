@@ -1,5 +1,4 @@
 cd "E:\1TB_disk\Dane\Projekty\Monitoring_Station"
-git checkout master
 eval $(ssh-agent -s)
 ssh-add C:/Users/Adam/.ssh/github_rsa
 git add /data/PM_data.Rdata

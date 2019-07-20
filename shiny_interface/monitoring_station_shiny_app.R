@@ -52,7 +52,9 @@ ui <- fluidPage(
          checkboxGroupInput("FixPM", label = 'Options',
                             'Fix scale of PM plot', selected = NA),
          sliderInput("MaxPM", label = 'Upper bound for PM plot if fix scale ticked', min = 10, 
-                     max = upper_range_PM, value = c(upper_range_PM), step = 10)#,
+                     max = upper_range_PM, value = c(upper_range_PM), step = 10),#,
+         checkboxGroupInput("Stories", label = 'Stories',
+                            c('Krakow in Winter 2017', 'Warsaw in Winter 2018', 'Baking Bread', 'Huge humidity in new apartment', 'Cooling down the apartment in hot weeks of Summer 2019'), selected = NULL)
         #tags$head(tags$script(src = "message-handler.js")),
         #actionButton("query", "Query Raspberry")
         ),

@@ -13,6 +13,8 @@ curlSetOpt(timeout = 2000000)
 
 load('Data/PM_data.Rdata')
 
+write.table('started', file = 'Data/working.txt')
+
 last_stored_obs <-
   PM_df_stored %>% filter(date_time == last(date_time)) %>% select(date, time, date_time)
 source('PC_raspberry_link/airly_API.R')
@@ -44,7 +46,7 @@ tail(PM_df2)
 both <-
 PM_df2 %>% rbind_list(Airly_df %>% select(-last_changed,-last_updated))
 str(both)
-
+write.table('PM done', file = 'Data/working.txt')
 both$owner <- factor(both$owner, levels = c('Domek','Airly'))
 
 
@@ -100,4 +102,4 @@ PM_data_relevant <-   PM_df_stored %>% filter(measurement == 'Humidity') %>%
 save(PM_data_relevant, file = paste0('data/PM_data_relevant.Rdata'))
 
 #save(PM_df_stored, file = paste0('data/PM_df',gsub(':','_',gsub(' ','_',date())),'.Rdata'))
-
+write.table('Finalized', file = 'Data/working.txt')

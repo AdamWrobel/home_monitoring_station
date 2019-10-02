@@ -72,7 +72,7 @@ ui <- fluidPage(
                             'Fix scale of PM plot', selected = NA),
          sliderInput("MaxPM", label = 'Upper bound for PM plot if fix scale ticked', min = 10, 
                      max = upper_range_PM, value = c(upper_range_PM), step = 10),#,
-         sliderInput("x_break", label = 'x-axis break', min = 4, 
+         sliderInput("x_break", label = 'x-axis breaks (default: by 4 hours)', min = 4, 
                      max = 24, value = 4, step = 4),
          checkboxGroupInput("Stories", label = 'Stories',
                             c('Krakow in Winter 2017/2018','Huge humidity in new apartment'), selected = NULL)

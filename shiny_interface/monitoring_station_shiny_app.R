@@ -10,6 +10,7 @@
 library(shiny)
 library(dplyr)
 library(ggplot2)
+library(scales)
 #library(jsonlite)
 #library(future)
 library(repmis)
@@ -71,6 +72,8 @@ ui <- fluidPage(
                             'Fix scale of PM plot', selected = NA),
          sliderInput("MaxPM", label = 'Upper bound for PM plot if fix scale ticked', min = 10, 
                      max = upper_range_PM, value = c(upper_range_PM), step = 10),#,
+         sliderInput("x_break", label = 'x-axis break', min = 4, 
+                     max = 24, value = 4, step = 4),
          checkboxGroupInput("Stories", label = 'Stories',
                             c('Krakow in Winter 2017/2018','Huge humidity in new apartment'), selected = NULL)
          #checkboxGroupInput("Stories", label = 'Stories',
@@ -128,7 +131,9 @@ server <- function(input, output, session) {
                        color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
             scale_alpha_manual(values=alphas)+
             scale_linetype_manual(values=c(1, 3))+
-            xlab('time') + ylab("Humidity") +
+            scale_x_datetime(date_breaks = paste0(input$x_break," hour"), labels = date_format("%H:%M"),
+                           sec.axis = sec_axis(~ ., name = "Day",labels = scales::time_format("%b %d"))) +
+            xlab('Hour of a day') + ylab("Humidity") +
             ylim(20,100) #+
             #xlim(start, end)
         
@@ -174,7 +179,9 @@ server <- function(input, output, session) {
                        color = gg_color_hue(4)[4], size=1.5, alpha = 0.8) +
             scale_alpha_manual(values=alphas)+
             scale_linetype_manual(values=c(1, 3)) +
-            xlab('time') + ylab("Air Pollution") +
+            scale_x_datetime(date_breaks = paste0(input$x_break," hour"), labels = date_format("%H:%M"),
+                         sec.axis = sec_axis(~ ., name = "Day",labels = scales::time_format("%b %d"))) +
+            xlab('Hour of a day') + ylab("Air Pollution") +
             scale_y_continuous(limits = c(0, MaxPM))
             
         
@@ -200,7 +207,9 @@ server <- function(input, output, session) {
                        color = gg_color_hue(4)[4], size=1.5, alpha = 0.5) +
             scale_alpha_manual(values=rev(alphas))+
             scale_linetype_manual(values=c(1))+
-            xlab('time') + ylab("Temperature")
+            scale_x_datetime(date_breaks = paste0(input$x_break," hour"), labels = date_format("%H:%M"),
+                           sec.axis = sec_axis(~ ., name = "Day",labels = scales::time_format("%b %d"))) +
+            xlab('Hour of a day') + ylab("Temperature")
 
 
     })

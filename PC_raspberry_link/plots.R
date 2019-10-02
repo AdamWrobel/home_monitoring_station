@@ -83,7 +83,9 @@ humidity_plot <- PM_df_stored %>% filter(date >= Sys.Date() -5 ) %>%
                color = gg_color_hue(2)[2], size=1.5, alpha = 0.5) +
     scale_alpha_manual(values=c(1,0.4,0.2))+
     scale_linetype_manual(values=c(1, 3))+
-    xlab('time') +
+    scale_x_datetime(date_breaks = "4 hour", labels = date_format("%H:%M"),
+                     sec.axis = sec_axis(~ ., name = "Day",labels = scales::time_format("%b %d"))) +
+    xlab('Hour of a day') +
     ylim(30,100)
 print(humidity_plot)
 

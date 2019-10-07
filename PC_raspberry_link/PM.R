@@ -52,7 +52,7 @@ both$owner <- factor(both$owner, levels = c('Domek','Airly'))
 
 humidity <- (fromJSON(paste0(adress,'sensor.dht_sensor_humidity')) %>% as.data.frame)[,-1] %>%
     transmute(date = as.Date(last_changed),
-              #time = substr(last_changed,12,19),
+              time = substr(last_changed,12,19),
               owner = "Domek",
               measurement = 'Humidity',
               level = as.numeric(state),
@@ -62,7 +62,7 @@ humidity <- (fromJSON(paste0(adress,'sensor.dht_sensor_humidity')) %>% as.data.f
 
 temperature <- (fromJSON(paste0(adress,'sensor.dht_sensor_temperature')) %>% as.data.frame)[,-1] %>%
     transmute(date = as.Date(last_changed),
-              #time = substr(last_changed,12,19),
+              time = substr(last_changed,12,19),
               owner = "Domek",
               measurement = 'Temperature',
               level = as.numeric(state),

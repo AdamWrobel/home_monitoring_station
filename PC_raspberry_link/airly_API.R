@@ -36,7 +36,7 @@ Airly_df <-
     mutate(state = ifelse(state == 'unknown', NA,state),
            state = as.numeric(state),
            date = as.Date(last_changed), 
-           #time = substr(last_changed,12,19),
+           time = substr(last_changed,12,19),
            date_time = paste(date, time), 
            date_time = as.POSIXct(date_time) + 60*60*2,
            time = substr(date_time,12,19)) %>%

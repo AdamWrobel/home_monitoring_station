@@ -38,7 +38,7 @@ Airly_df <-
            date = as.Date(last_changed), 
            time = substr(last_changed,12,19),
            date_time = paste(date, time), 
-           date_time = as.POSIXct(date_time) + 60*60*0) %>%
+           date_time = as.POSIXct(date_time) + 60*60*2) %>%
     rename(measurement = entity_id, level = state) %>%
     mutate(measurement = gsub('sensor.','',measurement),
            measurement = gsub('_airly','',measurement),

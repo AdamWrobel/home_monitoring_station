@@ -36,7 +36,7 @@ PM_df <- rbind(PM_dfa,PM_df)
 PM_df2 <- PM_df %>% mutate(measurement = gsub('pm2.5','PM 2.5',measurement),
                           measurement = gsub('pm10','PM 10',measurement),
                           date_time = as.character(date_time),
-                          date_time = as.POSIXct(date_time) + 60*60*1,
+                          date_time = as.POSIXct(date_time) + 60*60*2,
                           owner = 'Domek',
                           date = as.Date(date_time),
                           time = substr(date_time,12,19))
@@ -57,7 +57,7 @@ humidity <- (fromJSON(paste0(adress,'sensor.dht_sensor_humidity')) %>% as.data.f
               measurement = 'Humidity',
               level = as.numeric(state),
               date_time = paste(date, time),
-              date_time = as.POSIXct(date_time) + 60*60*0)
+              date_time = as.POSIXct(date_time) + 60*60*2)
 
 temperature <- (fromJSON(paste0(adress,'sensor.dht_sensor_temperature')) %>% as.data.frame)[,-1] %>%
     transmute(date = as.Date(last_changed),
@@ -66,7 +66,7 @@ temperature <- (fromJSON(paste0(adress,'sensor.dht_sensor_temperature')) %>% as.
               measurement = 'Temperature',
               level = as.numeric(state),
               date_time = paste(date, time),
-              date_time = as.POSIXct(date_time) + 60*60*0) %>%
+              date_time = as.POSIXct(date_time) + 60*60*2) %>%
     filter(abs(level - lag(level)) < 3 & abs(level - lead(level)) < 3) %>%
     mutate(slot = 1)
 

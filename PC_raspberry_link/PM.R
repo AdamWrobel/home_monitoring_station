@@ -57,7 +57,7 @@ humidity <- (fromJSON(paste0(adress,'sensor.dht_sensor_humidity')) %>% as.data.f
               measurement = 'Humidity',
               level = as.numeric(state),
               date_time = paste(date, time),
-              date_time = as.POSIXct(date_time) + 60*60*1)
+              date_time = as.POSIXct(date_time) + 60*60*0)
 
 temperature <- (fromJSON(paste0(adress,'sensor.dht_sensor_temperature')) %>% as.data.frame)[,-1] %>%
     transmute(date = as.Date(last_changed),
@@ -66,7 +66,7 @@ temperature <- (fromJSON(paste0(adress,'sensor.dht_sensor_temperature')) %>% as.
               measurement = 'Temperature',
               level = as.numeric(state),
               date_time = paste(date, time),
-              date_time = as.POSIXct(date_time) + 60*60*1) %>%
+              date_time = as.POSIXct(date_time) + 60*60*0) %>%
     filter(abs(level - lag(level)) < 3 & abs(level - lead(level)) < 3) %>%
     mutate(slot = 1)
 

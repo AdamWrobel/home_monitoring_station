@@ -72,13 +72,14 @@ temperature <- (fromJSON(paste0(adress,'sensor.dht_sensor_temperature')) %>% as.
     filter(abs(level - lag(level)) < 3 & abs(level - lead(level)) < 3) %>%
     mutate(slot = 1)
 
+if(dim(temperature)[1]>0){
 for (i in 2:(dim(temperature)[1]-1)){
     if(abs(temperature[i,'date_time'] - temperature[i-1,'date_time']) > 2* abs(temperature[i,'date_time'] - temperature[i+1,'date_time'])){
     temperature[i,'slot'] <-  temperature[i-1,'slot'] + 1} else{temperature[i,'slot'] <- temperature[i-1,'slot']}
 }
 temperature<-
 temperature %>% group_by(slot,owner,measurement) %>% summarize(level = median(level)) %>% left_join(temperature %>% filter(slot != lead(slot)) %>% select(-level)) %>% ungroup %>% select(-slot)
-
+}
 dht11 <- humidity %>% rbind(temperature)
 
 all <- both %>% rbind(dht11)

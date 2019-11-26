@@ -101,7 +101,8 @@ PM_data_relevant <-   PM_df_stored %>% filter(measurement == 'Humidity') %>%
   filter(substr(date_time,1,10) >= stories$high_humidity$dates[1],substr(date_time,1,10) <= stories$high_humidity$dates[2]) %>%
   rbind(PM_df_stored %>% filter(!measurement %in% c('PM 1','Humidity','Temperature')) %>%
             filter(substr(date_time,1,10) >= stories$Krakow_pollution$dates[1],substr(date_time,1,10) <= stories$Krakow_pollution$dates[2])) %>%
-  rbind(PM_df_stored %>% filter(date >= last_date - 10))
+  rbind(PM_df_stored %>% filter(date >= last_date - 10)) %>%
+  filter(is.na(level)==F)
 save(PM_data_relevant, file = paste0('data/PM_data_relevant.Rdata'))
 
 #save(PM_df_stored, file = paste0('data/PM_df',gsub(':','_',gsub(' ','_',date())),'.Rdata'))
